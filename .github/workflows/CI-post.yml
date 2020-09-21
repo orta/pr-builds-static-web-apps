@@ -39,19 +39,6 @@ jobs:
          echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')"
          echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.full_name')"
 
-      # Useful for debugging
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
-        # Useful for debugging
-      - name: Dump pr_info
-        env:
-          INFO: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
-
       # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
       - name: "Change branch"
         run: git checkout -b pr_${{ steps.pr_info.outputs.number }}
