@@ -29,18 +29,9 @@ jobs:
         run: |
           echo '{ "name": "fake", "scripts": { "build": "" } }' > built/package.json
 
-      # Useful for debugging
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
+      
       # Lets us use one-liner JSON manipulations on package.jsons
       - run: "npm install -g json"
-
-      - run: ls built
-      - run: ls built/public
-      - run: json -f built/public/pr.json 'pull_request'
 
       - name: Setup PR metadata
         id: pr_info
@@ -48,9 +39,22 @@ jobs:
          echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')\n"
          echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.replace(":", "/")')\n"
 
+      # Useful for debugging
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+        # Useful for debugging
+      - name: Dump pr_info
+        env:
+          INFO: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+
       # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
       - name: "Change branch"
-        run: git checkout -b pr_${{ steps.pr_info.number }}
+        run: git checkout -b pr_${{ steps.pr_info.outputs.number }}
 
       # Uploads the static build
       - name: Build And Deploy
@@ -74,8 +78,8 @@ jobs:
           PR_DEPLOY_URL_ROOT: ${{ steps.deploy.outputs.static_web_app_url }}
           DEBUG: "*"
           DANGER_FAKE_CI: true
-          DANGER_TEST_REPO: ${{ steps.pr_info.repo }}
-          DANGER_TEST_PR: ${{ steps.pr_info.number }}
+          DANGER_TEST_REPO: ${{ steps.pr_info.outputs.repo }}
+          DANGER_TEST_PR: ${{ steps.pr_info.outputs.number }}
 
 # TODO: Add close, we can probably pass over a close message to this somehow
 
