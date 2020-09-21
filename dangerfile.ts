@@ -1,33 +1,10 @@
-import { danger, message } from "danger"
-import { readFileSync } from "fs"
+import { message, danger } from "danger"
 
 export default async () => {
   // Print out a message to the PR
   const deployURL = process.env.PR_DEPLOY_URL_ROOT
-  message(`Deployed to [a PR branch](${deployURL})`)
-  
-  const contextText = readFileSync("built/public/pr.json", "utf8")
-  console.log(contextText)
-  const context = JSON.parse(contextText) as typeof import("./public/build/pr.json")
+  message(`Deployed to [a PR branch](${deployURL}) :tada:`)
 
-  const repo = { owner: context.pull_request.base.repo.owner.login, name: context.pull_request.base.repo.name }
-  const prNumber = context.pull_request.number
-  console.log(repo)
-
-  console.log(process.env.PR_DEPLOY_URL_ROOT)
-
-  const changedFiles = await getChangedFiles(repo.owner, repo.name, prNumber)
-  console.log(changedFiles)
-}
-
-const getChangedFiles = async (owner, name, prNumber: number) => {
-  const repo = { owner, name }
-
-  // https://developer.github.com/v3/pulls/#list-pull-requests-files
-  const options = danger.github.api.pulls.listFiles.endpoint.merge({ ...repo, pull_number: prNumber })
-
-  /** @type { import("@octokit/rest").PullsListFilesResponseItem[]} */
-  const files = await danger.github.api.paginate(options)
-  const fileStrings = files.map(f => `/${f.filename}`)
-  return fileStrings
+  const changed = danger.github.utils.fileLinks(danger.git.modified_files)
+  message(`Changed files: ${changed}`)
 }
