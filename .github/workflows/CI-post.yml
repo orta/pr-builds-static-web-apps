@@ -40,7 +40,7 @@ jobs:
 
       # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
       - name: "Change branch"
-        run: git checkout -b pr_$(json -f public/build/pr.json pull_request.number)
+        run: git checkout -b pr_$(json -f built/public/build/pr.json pull_request.number)
 
       # Uploads the static build
       - name: Build And Deploy
