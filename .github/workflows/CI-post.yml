@@ -38,6 +38,10 @@ jobs:
       # Lets us use one-liner JSON manipulations on package.jsons
       - run: "npm install -g json"
 
+      - run: ls built
+      - run: ls built/public
+      - run: json -f built/public/pr.json 'pull_request'
+
       - name: Setup PR metadata
         id: pr_info
         run: |
