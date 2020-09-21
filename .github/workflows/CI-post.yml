@@ -25,6 +25,11 @@ jobs:
           name: built-site
           path: built/public
 
+  
+      - name: "Make a fake 'app' for the azure project of the static HTML"
+        run: |
+          echo '{ "name": "fake", "scripts": { "build": "" } }' > built/package.json
+
       
       # Lets us dp one-liner JSON lookups
       - run: "npm install -g json"
