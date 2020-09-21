@@ -15,7 +15,8 @@ jobs:
        # Make a folder to drop all the rendered static html into
       - run: mkdir built
 
-      # Download into there
+      # Download the zipped version of the site, which also contains
+      # a copy of the PR's JSON dump
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -24,15 +25,13 @@ jobs:
           name: built-site
           path: built/public
 
-      # This might be optional
-      - name: "Make a fake 'app' for the azure project of the static HTML"
-        run: |
-          echo '{ "name": "fake", "scripts": { "build": "" } }' > built/package.json
-
       
-      # Lets us use one-liner JSON manipulations on package.jsons
+      # Lets us dp one-liner JSON lookups
       - run: "npm install -g json"
 
+      # Use the GitHub action output system to simplify the later actions
+      # Each line runs a command and sets the result to be a build output you can access
+      # via `steps.pr_info.outputs.xzy`.
       - name: Setup PR metadata
         id: pr_info
         run: |
@@ -45,7 +44,7 @@ jobs:
       - name: "Change branch"
         run: |
           git fetch origin pull/${{ steps.pr_info.outputs.number }}/head:pr_branch 
-          git checkout pr_banch
+          git checkout pr_branch
 
       # Uploads the static build
       - name: Build And Deploy
