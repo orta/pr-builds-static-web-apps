@@ -39,9 +39,13 @@ jobs:
          echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')"
          echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.full_name')"
 
-      # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
+      # Changes the branch to be the PR, after this the build is deployed.
+      # This is to set up the environment in Azure, and then is switched back straight after
+      # to ensure no code from that PR is executed.
       - name: "Change branch"
-        run: git checkout -b pr_${{ steps.pr_info.outputs.number }}
+        run: |
+          git fetch origin pull/${{ steps.pr_info.outputs.number }}/head:pr_branch 
+          git checkout pr_banch
 
       # Uploads the static build
       - name: Build And Deploy
@@ -56,6 +60,10 @@ jobs:
           app_location: "built" # App source code path
           app_artifact_location: "public" # Subfolder in built
           ###### End of Repository/Build Configurations #####
+
+      - name: "Back to master"
+        run: |
+          git checkout master
 
       # Uses Danger to communicate with the PR
       # We fake the CI (it's not a CI run, because this workflow occurs outside of the PR)
