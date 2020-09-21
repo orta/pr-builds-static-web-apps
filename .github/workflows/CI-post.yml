@@ -36,8 +36,8 @@ jobs:
       - name: Setup PR metadata
         id: pr_info
         run: |
-         echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')\n"
-         echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.label.replace(":", "/")')\n"
+         echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')"
+         echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.full_name')"
 
       # Useful for debugging
       - name: Dump GitHub context
