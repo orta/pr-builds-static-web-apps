@@ -56,6 +56,8 @@ jobs:
           app_artifact_location: "public" # Subfolder in built
           ###### End of Repository/Build Configurations #####
 
+      - run: "yarn install"
+
       # Uses Danger to communicate with the PR
       - run: "yarn danger ci"
         env:
