@@ -38,9 +38,15 @@ jobs:
       # Lets us use one-liner JSON manipulations on package.jsons
       - run: "npm install -g json"
 
+      - name: Setup PR metadata
+        id: pr_info
+        run: |
+         echo "::set-output name=number::$(json -f built/public/build/pr.json pull_request.number)\n"
+         echo "::set-output name=repo::$(json -f built/public/build/pr.json pull_request.base.repo.replace(":", "/"))\n"
+
       # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
       - name: "Change branch"
-        run: git checkout -b pr_$(json -f built/public/build/pr.json pull_request.number)
+        run: git checkout -b pr_${{ steps.pr_info.number }}
 
       # Uploads the static build
       - name: Build And Deploy
@@ -56,13 +62,16 @@ jobs:
           app_artifact_location: "public" # Subfolder in built
           ###### End of Repository/Build Configurations #####
 
-
       # Uses Danger to communicate with the PR
+      # We fake the CI (it's not a CI run, because this workflow occurs outside of the PR)
       - run: "npx danger-ts ci"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_DEPLOY_URL_ROOT: ${{ steps.deploy.outputs.static_web_app_url }}
           DEBUG: "*"
+          DANGER_FAKE_CI: true
+          DANGER_TEST_REPO: ${{ steps.pr_info.repo }}
+          DANGER_TEST_PR: ${{ steps.pr_info.number }}
 
 # TODO: Add close, we can probably pass over a close message to this somehow
 
