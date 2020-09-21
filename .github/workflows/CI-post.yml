@@ -25,7 +25,7 @@ jobs:
           name: built-site
           path: built/public
 
-  
+      # This is so SWA accepts a set of html files with no app  
       - name: "Make a fake 'app' for the azure project of the static HTML"
         run: |
           echo '{ "name": "fake", "scripts": { "build": "" } }' > built/package.json
