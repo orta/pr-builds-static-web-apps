@@ -33,9 +33,6 @@ jobs:
       - name: "Builds the site"
         run: yarn build
 
-      - name: "Validates that TypeScript plugins work"
-        run: npm init typescript-playground-plugin playground-my-plugin
-
       - name: "Copy PR JSON into the zip"
         run: cp $GITHUB_EVENT_PATH ${{ github.workspace }}/public/pr.json
 
