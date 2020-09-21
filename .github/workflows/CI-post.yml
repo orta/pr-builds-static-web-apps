@@ -56,13 +56,13 @@ jobs:
           app_artifact_location: "public" # Subfolder in built
           ###### End of Repository/Build Configurations #####
 
-      - run: "yarn install"
 
       # Uses Danger to communicate with the PR
-      - run: "yarn danger ci"
+      - run: "npx danger-ts ci"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_DEPLOY_URL_ROOT: ${{ steps.deploy.outputs.static_web_app_url }}
+          DEBUG: "*"
 
 # TODO: Add close, we can probably pass over a close message to this somehow
 
