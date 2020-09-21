@@ -42,7 +42,7 @@ jobs:
         id: pr_info
         run: |
          echo "::set-output name=number::$(json -f built/public/pr.json 'pull_request.number')\n"
-         echo "::set-output name=repo::$(json -f built/public/pr.json pull_request.base.repo.replace(":", "/"))\n"
+         echo "::set-output name=repo::$(json -f built/public/pr.json 'pull_request.base.repo.replace(":", "/")')\n"
 
       # Changes the branch to be based on the PR issue number, this doesn't get shipped to prod
       - name: "Change branch"
